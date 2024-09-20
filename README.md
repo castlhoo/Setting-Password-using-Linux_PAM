@@ -1,71 +1,60 @@
 
-# 🔐 Linux PAM을 이용한 비밀번호 규칙 설정
+# 🔐 Linux PAM Password Policy Configuration Guide
 
-## 📌 목차
-1. [새로운 VM 생성](#1-새로운-vm-생성)
-2. [IP 주소 설정](#2-ip-주소-설정)
-3. [PAM 설정](#3-pam-설정)
-4. [결과 확인](#4-결과-확인)
-
----
-
-## 1. 새로운 VM 생성 🖥️
-
-기존 `myserver01`을 복제하여 새로운 `myserver03` VM을 생성합니다.
-
-![VM 생성](https://github.com/user-attachments/assets/614c8f3c-4a60-4a51-9805-7b081fc0e0ef)
+## 📌 Table of Contents
+1. [Creating a New VM](#1-creating-a-new-vm)
+2. [IP Address Configuration](#2-ip-address-configuration)
+3. [PAM Configuration](#3-pam-configuration)
+4. [Verification](#4-verification)
 
 ---
 
-## 2. IP 주소 설정 🌐
+## 1. Creating a New VM 🖥️
 
-새로 생성한 VM의 IP 주소를 다음과 같이 변경합니다:
-- **기존 IP주소**: `10.0.2.15`
-- **새로운 IP주소**: `10.0.2.21`
+Clone the existing `myserver01` to create a new VM called `myserver03`.
 
-### 2.1 Netplan 설정 파일 수정
+---
+
+## 2. IP Address Configuration 🌐
+
+Change the IP address of the newly created VM:
+- **Old IP address**: `10.0.2.15`
+- **New IP address**: `10.0.2.21`
+
+### 2.1 Editing Netplan Configuration
 
 ```bash
 sudo vi /etc/netplan/00-installer-config.yaml
 ```
 
-![Netplan 설정](https://github.com/user-attachments/assets/d217953f-4fa0-46fa-a498-73b32d2439ed)
+### 2.2 Port Configuration
 
-### 2.2 포트 설정
+Configure the ports for `myserver03`:
 
-`myserver03`에 대한 포트 설정:
-
-![YAML 설정](https://github.com/user-attachments/assets/0b8aa7c0-7fcc-4234-b07b-fa11e9a99692)
-
-### 2.3 IP 설정 완료
-
-![포트 설정](https://github.com/user-attachments/assets/9f03d6fa-ece8-40c0-9a7a-7d4624042f82)
+### 2.3 IP Configuration Completed
 
 ---
 
-## 3. PAM 설정 🛠️
+## 3. PAM Configuration 🛠️
 
-### 3.1 PAM 소개
+### 3.1 Introduction to PAM
 
-**PAM(Pluggable Authentication Module)**은 사용자를 인증하고 서비스에 대한 액세스를 제어하는 모듈화된 방식입니다. 관리자는 PAM을 사용해 응용프로그램의 인증 방법을 선택할 수 있으며, 재컴파일 없이도 인증 방법을 쉽게 변경할 수 있습니다.
+**PAM (Pluggable Authentication Module)** is a modular system that allows for flexible authentication methods for users and access control to services. It enables administrators to choose the authentication methods for applications and allows changes without recompilation.
 
-- PAM의 주요 설정 파일 위치:
-  - 설정 파일: `/etc/pam.d` 또는 `/etc/pam.conf`
-  - 모듈 파일: `/lib/security` 또는 `/usr/lib/security`
+- Key locations for PAM configuration:
+  - Configuration files: `/etc/pam.d` or `/etc/pam.conf`
+  - Module files: `/lib/security` or `/usr/lib/security`
 
-### 3.2 PAM 설치
+### 3.2 Installing PAM
 
 ```bash
 sudo apt install libpam0g-dev
 sudo apt install libpam-pwquality
 ```
 
-![PAM 설치 1](https://github.com/user-attachments/assets/5a494d9d-7e48-4456-bb7d-e815f449ae26)  
-![PAM 설치 2](https://github.com/user-attachments/assets/e8484c60-978c-4a17-9eb4-472dec4c946b)
+### 3.3 Configuring `pwquality.conf`
 
-### 3.3 `pwquality.conf` 설정
-
-`/etc/security/pwquality.conf` 파일을 열어 아래 설정을 추가합니다:
+Open and modify the `/etc/security/pwquality.conf` file to add the following settings:
 
 ```bash
 minlen = 8
@@ -75,40 +64,34 @@ lcredit = -1
 ocredit = 0
 ```
 
-![pwquality.conf 설정](https://github.com/user-attachments/assets/82e93c99-c9e8-40e8-88e2-5b3f7135a6e1)
+#### Meaning of each setting:
+- **`minlen = 8`**: Sets the minimum password length to 8 characters.
+- **`dcredit = -1`**: Requires at least 1 digit in the password.
+- **`ucredit = -1`**: Requires at least 1 uppercase letter in the password.
+- **`lcredit = -1`**: Requires at least 1 lowercase letter in the password.
+- **`ocredit = 0`**: Special characters are not mandatory.
 
-#### 각 설정의 의미:
-- **`minlen = 8`**: 비밀번호 최소 길이를 8자리로 설정.
-- **`dcredit = -1`**: 최소 1개의 숫자가 포함되어야 함.
-- **`ucredit = -1`**: 최소 1개의 대문자가 포함되어야 함.
-- **`lcredit = -1`**: 최소 1개의 소문자가 포함되어야 함.
-- **`ocredit = 0`**: 특수 문자는 필수가 아님.
+### 3.4 Configuring `common-password` File
 
-### 3.4 `common-password` 파일 설정
-
-`/etc/pam.d/common-password` 파일을 수정하여 아래 내용을 추가합니다:
+Edit the `/etc/pam.d/common-password` file and add the following:
 
 ```bash
 password requisite pam_pwquality.so retry=3 minlen=8
 ```
 
-![common-password 설정](https://github.com/user-attachments/assets/11c29ade-cb48-4bee-b3bc-0ea08d63192a)
-
-#### 각 항목의 의미:
-1. **`password`**: 비밀번호 관련 인증 과정을 관리.
-2. **`requisite`**: 이 모듈이 실패하면 PAM 스택에서 즉시 실패 처리.
-3. **`pam_pwquality.so`**: 비밀번호 품질(길이, 복잡성 등)을 검사.
-4. **`retry=3`**: 비밀번호 입력 시 3번까지 시도 가능.
-5. **`minlen=8`**: 비밀번호는 최소 8자리를 요구.
+#### Explanation of each field:
+1. **`password`**: Manages the password-related authentication process.
+2. **`requisite`**: If this module fails, PAM immediately stops and denies access.
+3. **`pam_pwquality.so`**: This module checks password quality (length, complexity, etc.).
+4. **`retry=3`**: Allows up to 3 attempts for password entry.
+5. **`minlen=8`**: Requires a minimum password length of 8 characters.
 
 ---
 
-## 4. 결과 확인 ✅
+## 4. Verification ✅
 
-비밀번호 설정을 시도할때, 8자 미만의 비밀번호를 설정하려고 하면 시스템에서 거부
-
-![결과 확인](https://github.com/user-attachments/assets/27cf3bc7-06cf-45e2-b8f6-22d02c3b794b)
+Test setting a password. If the password is less than 8 characters, the system will reject it.
 
 ---
 
-🎉PAM을 사용한 비밀번호 규칙 설정을 통해 시스템 보안을 강화할 수 있습니다!
+🎉 By following these steps, you have now strengthened your system security by configuring password policies using PAM!
