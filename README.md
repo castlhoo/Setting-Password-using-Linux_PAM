@@ -95,6 +95,22 @@ ocredit = 0은 특수 문자가 포함되지 않아도 된다는 의미
 ![common-password 설정](https://github.com/user-attachments/assets/11c29ade-cb48-4bee-b3bc-0ea08d63192a)
 
 수정 내용: `password requisite pam_pwquality.so retry=3 minlen=8`
+1. password:
+**PAM 모듈의 "타입"**을 지정합니다. password는 이 줄이 비밀번호 변경이나 설정과 관련된 인증 과정을 관리한다는 것을 의미
+
+2. requisite:
+이 모듈에서 비밀번호가 정책을 따르지 않으면 PAM 스택은 즉시 실패하고, 이후의 모듈은 실행되지 않음을 의미
+
+4. pam_pwquality.so:
+PAM 모듈 중 하나인 pam_pwquality 모듈을 사용, 이 모듈은 비밀번호의 품질(복잡성, 길이 등)을 검사하는 역할
+이 모듈은 비밀번호의 길이, 숫자, 대문자/소문자, 특수 문자 등을 요구하여 보안 수준을 높이는 데 사용
+.
+6. retry=3:
+사용자가 비밀번호를 설정할 때 최대 3번까지 시도할 수 있도록 허용하는 옵션
+
+8. minlen=8:
+비밀번호의 최소 길이를 지정, 최소 8자리의 비밀번호가 요구됨을 의미
+minlen=8은 사용자가 입력하는 비밀번호가 최소 8자 이상이어야만 허용
 
 ## 4. 결과 확인 ✅
 
