@@ -66,6 +66,27 @@ sudo apt install libpam-pwequality
 ![pwquality.conf 설정](https://github.com/user-attachments/assets/82e93c99-c9e8-40e8-88e2-5b3f7135a6e1)
 
 설정 내용: `minlen = 8` (비밀번호 최소 8자 설정)
+minlen = 8:
+
+최소 비밀번호 길이를 8자리로 설정한 것으로, 
+이는 비밀번호가 최소 8자 이상이어야 함을 의미
+dcredit = -1:
+
+비밀번호에 포함되어야 하는 최소 숫자(digit) 개수를 정의
+dcredit = -1은 최소 하나의 숫자가 비밀번호에 포함되어야 하는 의미로, 
+숫자를 최소 1개 이상 포함해야 한다는 규칙
+ucredit = -1:
+
+비밀번호에 포함되어야 하는 최소 대문자(uppercase character) 개수를 정의
+ucredit = -1은 최소 하나의 대문자가 비밀번호에 포함되어야 함을 의미
+lcredit = -1:
+
+비밀번호에 포함되어야 하는 최소 소문자(lowercase character) 개수를 정의
+lcredit = -1은 최소 하나의 소문자가 비밀번호에 포함되어야 함을 의미
+ocredit = 0:
+
+비밀번호에 포함되어야 하는 특수 문자(other character) 개수를 정의
+ocredit = 0은 특수 문자가 포함되지 않아도 된다는 의미
 
 ### 3.4 common-password 파일 설정
 
